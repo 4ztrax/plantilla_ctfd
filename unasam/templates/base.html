@@ -1,0 +1,10 @@
+{% extends "core/base.html" %}
+{% block stylesheets %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('views.themes', theme='unasam', path='static/css/theme.css') }}?v=auth1">
+{% endblock %}
+{% block scripts %}
+  {{ super() }}
+  <script defer src="{{ url_for('views.themes', theme='unasam', path='static/js/theme.js') }}"></script>
+{% endblock %}
+

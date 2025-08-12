@@ -1,0 +1,103 @@
+{# CTFd/themes/unasam/templates/components/navbar.html #}
+{% set path = request.path or '' %}
+
+{# ==== Resolver logo con TODOS los casos cubiertos ==== #}
+{% set raw_logo = Configs.ctf_logo or Configs.ctf_small_icon %}
+{% if raw_logo %}
+  {# Si ya viene como URL absoluta o ya apunta a /files, úsala tal cual #}
+  {% if raw_logo.startswith('http') or raw_logo.startswith('/files/') %}
+    {% set logo_url = raw_logo %}
+  {% else %}
+    {# Es un path almacenado por CTFd -> hay que servirlo por /files #}
+    {% set logo_url = url_for('views.files', path=raw_logo) %}
+  {% endif %}
+{% else %}
+  {# Fallback al archivo del theme #}
+  {% set logo_url = url_for('views.themes', theme='unasam', path='static/img/dragon.webp') %}
+{% endif %}
+
+<nav class="navbar navbar-expand-md navbar-dark">
+  <div class="container">
+
+    {# BRAND / LOGO + nombre (nombre oculto en móviles) #}
+    <a class="navbar-brand brand-logo" href="/">
+      <img
+        class="navbar-logo"
+        src="{{ logo_url }}"
+        alt="Logo"
+        loading="eager"
+        onerror="this.onerror=null;this.src='{{ url_for('views.themes', theme='unasam', path='static/img/dragon.webp') }}';"
+      />
+    </a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navMain" aria-controls="navMain"
+            aria-expanded="false" aria-label="Abrir navegación">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMain">
+      {# ===== MENÚ CENTRADO ===== #}
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item {{ 'active' if path.startswith('/scoreboard') }}">
+          <a class="nav-link" href="/scoreboard">
+            <i class="fa fa-trophy mr-1"></i> Marcador
+          </a>
+        </li>
+        <li class="nav-item {{ 'active' if path.startswith('/challenges') }}">
+          <a class="nav-link" href="/challenges">
+            <i class="fa fa-flag-checkered mr-1"></i> Retos
+          </a>
+        </li>
+      </ul>
+
+      {# ===== ICONOS DERECHA ===== #}
+      <ul class="navbar-nav ml-auto">
+        {% if authed() %}
+          {% if is_admin() %}
+          <li class="nav-item {{ 'active' if path.startswith('/admin') }}">
+            <a class="nav-link icon-only" href="/admin" title="Admin" aria-label="Admin">
+              <i class="fa fa-wrench"></i>
+            </a>
+          </li>
+          {% endif %}
+
+          <li class="nav-item {{ 'active' if path.startswith('/notifications') }}">
+            <a class="nav-link icon-only" href="/notifications" title="Notificaciones" aria-label="Notificaciones">
+              <i class="fa fa-bell"></i>
+            </a>
+          </li>
+
+          <li class="nav-item {{ 'active' if path.startswith('/profile') }}">
+            <a class="nav-link icon-only" href="/profile" title="Perfil" aria-label="Perfil">
+              <i class="fa fa-user-circle"></i>
+            </a>
+          </li>
+
+          <li class="nav-item {{ 'active' if path.startswith('/settings') }}">
+            <a class="nav-link icon-only" href="/settings" title="Ajustes" aria-label="Ajustes">
+              <i class="fa fa-cog"></i>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link icon-only" href="/logout" title="Salir" aria-label="Salir">
+              <i class="fa fa-power-off"></i>
+            </a>
+          </li>
+        {% else %}
+          <li class="nav-item {{ 'active' if path.startswith('/register') }}">
+            <a class="nav-link" href="/register">
+              <i class="fa fa-user-plus mr-1"></i> Registrarse
+            </a>
+          </li>
+          <li class="nav-item {{ 'active' if path.startswith('/login') }}">
+            <a class="nav-link" href="/login">
+              <i class="fa fa-sign-in-alt mr-1"></i> Iniciar sesión
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

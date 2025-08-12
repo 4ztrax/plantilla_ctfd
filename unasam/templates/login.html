@@ -1,0 +1,59 @@
+{# CTFd/themes/unasam/templates/login.html #}
+{% extends "base.html" %}
+
+{% block content %}
+<section class="simple-auth">
+  <div class="auth-wrap">
+    <div class="brand">
+      <span class="brand-text">{{ Configs.ctf_name }}</span>
+    </div>
+
+    <h1>Iniciar sesión</h1>
+    <p class="muted">Bienvenido de vuelta</p>
+
+    {% if errors %}
+      <div class="alert alert-danger" role="alert">
+        {% if errors is string %}{{ errors }}{% else %}{% for e in errors %}{{ e }}<br>{% endfor %}{% endif %}
+      </div>
+    {% endif %}
+
+    <form id="login-form" method="post" action="{{ url_for('auth.login') }}" autocomplete="on">
+      <input type="hidden" name="nonce" value="{{ Session.nonce }}">
+
+      <div class="field">
+        <label for="name">Usuario o correo</label>
+        <input id="name" name="name" type="text" class="input"
+               placeholder="tu@correo.com" required autocomplete="username" autofocus>
+      </div>
+
+      <div class="field">
+        <label for="password">Contraseña</label>
+        <div class="input-group">
+          <input id="password" name="password" type="password" class="input"
+                 placeholder="••••••••" required autocomplete="current-password">
+          <button type="button" class="toggle" aria-label="Mostrar/ocultar">👁</button>
+        </div>
+      </div>
+
+      <div class="actions">
+        <a class="muted" href="{{ url_for('auth.reset_password') }}">¿Olvidaste tu contraseña?</a>
+        <button class="btn btn-primary">Acceder</button>
+      </div>
+
+      <div class="hint muted">¿No tienes cuenta? <a href="{{ url_for('auth.register') }}">Regístrate</a></div>
+    </form>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    // Mostrar/ocultar contraseña
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.toggle'); if(!btn) return;
+      const input = btn.closest('.input-group').querySelector('input');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    });
+  </script>
+{% endblock %}

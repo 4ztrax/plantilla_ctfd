@@ -1,0 +1,90 @@
+{# CTFd/themes/unasam/templates/register.html #}
+{% extends "base.html" %}
+
+{% block content %}
+<section class="simple-auth">
+  <div class="auth-wrap">
+    <div class="brand">
+      <span class="brand-text">{{ Configs.ctf_name }}</span>
+    </div>
+
+    <h1>Crear cuenta</h1>
+    <p class="muted">Únete a la plataforma</p>
+
+    {% if errors %}
+      <div class="alert alert-danger" role="alert">
+        {% if errors is string %}{{ errors }}{% else %}{% for e in errors %}{{ e }}<br>{% endfor %}{% endif %}
+      </div>
+    {% endif %}
+
+    <form id="register-form" method="post" action="{{ url_for('auth.register') }}" autocomplete="on">
+      <input type="hidden" name="nonce" value="{{ Session.nonce }}">
+
+      <div class="field">
+        <label for="name">Nombre de usuario</label>
+        <input id="name" name="name" type="text" class="input"
+               placeholder="tu-usuario" required autocomplete="username">
+      </div>
+
+      <div class="field">
+        <label for="email">Correo</label>
+        <input id="email" name="email" type="email" class="input"
+               placeholder="tu@correo.com" required autocomplete="email">
+      </div>
+
+      <div class="field">
+        <label for="password">Contraseña</label>
+        <div class="input-group">
+          <input id="password" name="password" type="password" class="input"
+                 placeholder="••••••••" required autocomplete="new-password">
+          <button type="button" class="toggle" aria-label="Mostrar/ocultar">👁</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="password_confirmation">Confirmar contraseña</label>
+        <div class="input-group">
+          <input id="password_confirmation" name="password_confirmation" type="password" class="input"
+                 placeholder="Repite tu contraseña" required autocomplete="new-password">
+          <button type="button" class="toggle" aria-label="Mostrar/ocultar">👁</button>
+        </div>
+      </div>
+
+      {# Si el CTF está en modo equipos, muestra campos de equipo #}
+      {% if Configs.user_mode and 'teams' in (Configs.user_mode|string|lower) %}
+      <div class="field">
+        <label for="team_name">Nombre del equipo</label>
+        <input id="team_name" name="team_name" type="text" class="input"
+               placeholder="MiEquipo" autocomplete="organization">
+      </div>
+
+      <div class="field">
+        <label for="team_password">Contraseña del equipo</label>
+        <div class="input-group">
+          <input id="team_password" name="team_password" type="password" class="input"
+                 placeholder="Contraseña para unirte/crear" autocomplete="off">
+          <button type="button" class="toggle" aria-label="Mostrar/ocultar">👁</button>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="actions">
+        <a class="muted" href="{{ url_for('auth.login') }}">¿Ya tienes cuenta? Inicia sesión</a>
+        <button class="btn btn-primary">Crear cuenta</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    // Mostrar/ocultar contraseñas
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.toggle'); if (!btn) return;
+      const input = btn.closest('.input-group').querySelector('input');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    });
+  </script>
+{% endblock %}
